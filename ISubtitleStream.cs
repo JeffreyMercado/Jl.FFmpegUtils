@@ -2,7 +2,7 @@ namespace Jl.FFmpegUtils;
 
 public interface ISubtitleStream : IMediaStream
 {
-    MediaStreamType IMediaStream.Type => MediaStreamType.Subtitle;
+    MediaStreamType IMediaStream.MediaType => MediaStreamType.Subtitle;
 
     int? Default { get; }
     int? Forced { get; }
