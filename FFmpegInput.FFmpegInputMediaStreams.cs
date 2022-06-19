@@ -18,19 +18,14 @@ public partial record FFmpegInput
             SubtitleStreams = mediaInfo.Streams.OfType<ISubtitleStream>()
                 .Select((x, i) => new FFmpegInputSubtitleStream(input, x, i))
                 .ToImmutableArray();
-            DataStreams = mediaInfo.Streams.OfType<IDataStream>()
-                .Select((x, i) => new FFmpegInputDataStream(input, x, i))
-                .ToImmutableArray();
             mediaStreams = VideoStreams.Cast<IFFmpegInputMediaStream>()
                 .Concat(AudioStreams)
                 .Concat(SubtitleStreams)
-                .Concat(DataStreams)
                 .ToImmutableArray();
         }
         public IReadOnlyList<IFFmpegInputVideoStream> VideoStreams { get; }
         public IReadOnlyList<IFFmpegInputAudioStream> AudioStreams { get; }
         public IReadOnlyList<IFFmpegInputSubtitleStream> SubtitleStreams { get; }
-        public IReadOnlyList<IFFmpegInputDataStream> DataStreams { get; }
         public int Count => mediaStreams.Count;
         public IFFmpegInputMediaStream this[int index] => mediaStreams[index];
 

@@ -5,5 +5,4 @@ public interface IFFmpegInputMediaStreams : IReadOnlyList<IFFmpegInputMediaStrea
     IReadOnlyList<IFFmpegInputVideoStream> VideoStreams { get; }
     IReadOnlyList<IFFmpegInputAudioStream> AudioStreams { get; }
     IReadOnlyList<IFFmpegInputSubtitleStream> SubtitleStreams { get; }
-    IReadOnlyList<IFFmpegInputDataStream> DataStreams { get; }
 }

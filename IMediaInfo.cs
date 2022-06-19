@@ -10,5 +10,4 @@ public interface IMediaInfo
     IReadOnlyList<IVideoStream> VideoStreams { get; }
     IReadOnlyList<IAudioStream> AudioStreams { get; }
     IReadOnlyList<ISubtitleStream> SubtitleStreams { get; }
-    IReadOnlyList<IDataStream> DataStreams { get; }
 }
