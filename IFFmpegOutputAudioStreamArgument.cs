@@ -1,0 +1,11 @@
+namespace Jl.FFmpegUtils;
+
+public interface IFFmpegOutputAudioStreamArgument
+{
+    IFFmpegOutputArgument Create(IFFmpegOutputAudioStreamBuilder builder);
+}
+
+public interface IFFmpegOutputAudioStreamBuilder : IFFmpegOutputStreamBuilder
+{
+    IFFmpegOutputAudioStreamBuilder AddArgument(IFFmpegOutputAudioStreamArgument argument);
+}
