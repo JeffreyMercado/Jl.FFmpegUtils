@@ -6,7 +6,7 @@ public partial record FFmpegClArguments
 {
     public record Builder(IMediaInfoProvider Provider) : IFFmpegClArgumentsBuilder
     {
-        public static Builder Create(IMediaInfoProvider provider) => new Builder(
+        public static IFFmpegClArgumentsBuilder Create(IMediaInfoProvider provider) => new Builder(
             provider ?? throw new ArgumentNullException(nameof(provider))
         );
 
