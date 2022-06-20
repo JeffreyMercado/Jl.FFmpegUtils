@@ -7,6 +7,6 @@ public record FileInputSource(string FilePath) : IFFmpegInputSource, IFileMediaS
     public async Task<IFFmpegInputBuilder> CreateInputBuilderAsync(IMediaInfoProvider provider)
     {
         var mediaInfo = await provider.GetMediaInfoAsync(this).ConfigureAwait(false);
-        return FFmpegInput.Builder.Create(this, mediaInfo);
+        return FFmpegInput.CreateBuilder(this, mediaInfo);
     }
 }

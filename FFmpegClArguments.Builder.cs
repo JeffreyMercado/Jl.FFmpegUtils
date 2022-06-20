@@ -6,10 +6,6 @@ public partial record FFmpegClArguments
 {
     public record Builder(IMediaInfoProvider Provider) : IFFmpegClArgumentsBuilder
     {
-        public static IFFmpegClArgumentsBuilder Create(IMediaInfoProvider provider) => new Builder(
-            provider ?? throw new ArgumentNullException(nameof(provider))
-        );
-
         private readonly ImmutableArray<IFFmpegGlobalArgument>.Builder globalArguments = ImmutableArray.CreateBuilder<IFFmpegGlobalArgument>();
         private readonly List<InputConfig> inputConfigs = new List<InputConfig>();
 

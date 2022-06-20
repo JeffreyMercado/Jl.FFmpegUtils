@@ -6,11 +6,6 @@ public partial record FFmpegOutput
 {
     public partial record Builder(IFFmpegOutputSink Sink, IReadOnlyList<IFFmpegInput> Inputs) : IFFmpegOutputBuilder
     {
-        public static IFFmpegOutputBuilder Create(IFFmpegOutputSink sink, IReadOnlyList<IFFmpegInput> inputs) => new Builder(
-            sink ?? throw new ArgumentNullException(nameof(sink)),
-            inputs ?? throw new ArgumentNullException(nameof(inputs))
-        );
-
         private readonly ImmutableArray<IFFmpegOutputComplexFilterArgument>.Builder complexFilters = ImmutableArray.CreateBuilder<IFFmpegOutputComplexFilterArgument>();
         private readonly ImmutableArray<IFFmpegOutputArgument>.Builder arguments = ImmutableArray.CreateBuilder<IFFmpegOutputArgument>();
         private readonly ImmutableArray<IFFmpegOutputVideoStreamBuilder>.Builder videoStreamBuilders = ImmutableArray.CreateBuilder<IFFmpegOutputVideoStreamBuilder>();

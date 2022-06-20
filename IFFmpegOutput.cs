@@ -8,11 +8,6 @@ public interface IFFmpegOutput
     IReadOnlyList<IFFmpegOutputArgumentStream> VideoStreamArguments { get; }
     IReadOnlyList<IFFmpegOutputArgumentStream> AudioStreamArguments { get; }
 
-    IEnumerable<IFFmpegOutputArgument> AllArguments => ComplexFilterArguments
-        .Concat(Arguments)
-        .Concat(VideoStreamArguments.SelectMany(x => x.GetArguments()))
-        .Concat(AudioStreamArguments.SelectMany(x => x.GetArguments()));
-
     string SerializeOutputArgument();
     string SerializeOutputArgumentReadable();
 }

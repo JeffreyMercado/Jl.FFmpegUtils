@@ -4,24 +4,15 @@ namespace Jl.FFmpegUtils;
 
 public partial record FFmpegInput
 {
-    private partial class FFmpegInputMediaStreams : IFFmpegInputMediaStreams
+    private class FFmpegInputMediaStreams : IFFmpegInputMediaStreams
     {
         private readonly IReadOnlyList<IFFmpegInputMediaStream> mediaStreams;
         public FFmpegInputMediaStreams(FFmpegInput input, IMediaInfo mediaInfo)
         {
-            VideoStreams = mediaInfo.Streams.OfType<IVideoStream>()
-                .Select((x, i) => new FFmpegInputVideoStream(input, x, i))
-                .ToImmutableArray();
-            AudioStreams = mediaInfo.Streams.OfType<IAudioStream>()
-                .Select((x, i) => new FFmpegInputAudioStream(input, x, i))
-                .ToImmutableArray();
-            SubtitleStreams = mediaInfo.Streams.OfType<ISubtitleStream>()
-                .Select((x, i) => new FFmpegInputSubtitleStream(input, x, i))
-                .ToImmutableArray();
-            mediaStreams = VideoStreams.Cast<IFFmpegInputMediaStream>()
-                .Concat(AudioStreams)
-                .Concat(SubtitleStreams)
-                .ToImmutableArray();
+            mediaStreams = mediaInfo.Streams.Select(x => CreateStream(input, x)).ToImmutableArray();
+            VideoStreams = mediaStreams.OfType<IFFmpegInputVideoStream>().ToImmutableArray();
+            AudioStreams = mediaStreams.OfType<IFFmpegInputAudioStream>().ToImmutableArray();
+            SubtitleStreams = mediaStreams.OfType<IFFmpegInputSubtitleStream>().ToImmutableArray();
         }
         public IReadOnlyList<IFFmpegInputVideoStream> VideoStreams { get; }
         public IReadOnlyList<IFFmpegInputAudioStream> AudioStreams { get; }
@@ -32,4 +23,19 @@ public partial record FFmpegInput
         public IEnumerator<IFFmpegInputMediaStream> GetEnumerator() => mediaStreams.GetEnumerator();
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
     }
+
+    private static IFFmpegInputMediaStream CreateStream(FFmpegInput input, IMediaStream stream) => stream switch
+    {
+        IVideoStream vid => new FFmpegInputVideoStream(input, vid) as IFFmpegInputMediaStream,
+        IAudioStream aud => new FFmpegInputAudioStream(input, aud),
+        ISubtitleStream sub => new FFmpegInputSubtitleStream(input, sub),
+        var str => new FFmpegInputNullStream(input, str),
+    };
+
+    private abstract record FFmpegInputMediaStream<T>(IFFmpegInput Input, T Stream) : IFFmpegInputMediaStream where T : IMediaStream
+    {
+        public int Index => Stream.Index;
+    }
+
+    private record FFmpegInputNullStream(IFFmpegInput Input, IMediaStream Stream) : FFmpegInputMediaStream<IMediaStream>(Input, Stream);
 }

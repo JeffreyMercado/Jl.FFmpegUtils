@@ -6,7 +6,7 @@ public record FileOutputSink(string FilePath) : IFFmpegOutputSink
 
     public Task<IFFmpegOutputBuilder> CreateOutputBuilderAsync(IReadOnlyList<IFFmpegInput> inputs)
     {
-        var builder = FFmpegOutput.Builder.Create(this, inputs);
+        var builder = FFmpegOutput.CreateBuilder(this, inputs);
         return Task.FromResult(builder);
     }
 }

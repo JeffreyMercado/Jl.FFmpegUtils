@@ -2,10 +2,5 @@ namespace Jl.FFmpegUtils;
 
 public partial record FFmpegInput
 {
-    private partial class FFmpegInputMediaStreams
-    {
-        private record FFmpegInputVideoStream(IFFmpegInput Input, IVideoStream Stream, int VideoIndex) : IFFmpegInputVideoStream
-        {
-        }
-    }
+    private record FFmpegInputVideoStream(IFFmpegInput Input, IVideoStream Stream) : FFmpegInputMediaStream<IVideoStream>(Input, Stream), IFFmpegInputVideoStream;
 }
