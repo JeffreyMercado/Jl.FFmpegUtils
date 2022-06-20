@@ -17,6 +17,7 @@ public interface IFFmpegClArgumentsBuilder
     public IFFmpegClArgumentsBuilder AddInput(string inputPath, Action<IFFmpegInputBuilder, int>? config = default);
     public IFFmpegClArgumentsBuilder AddInput(IFFmpegInputSource source, Action<IFFmpegInputBuilder> config);
     public IFFmpegClArgumentsBuilder AddInput(IFFmpegInputSource source, Action<IFFmpegInputBuilder, int>? config = default);
-    public Task<IFFmpegClArguments> BuildAsync(string outputPath, Action<IFFmpegOutputBuilder>? config = default);
-    public Task<IFFmpegClArguments> BuildAsync(IFFmpegOutputSink sink, Action<IFFmpegOutputBuilder>? config = default);
+    public IFFmpegClArgumentsBuilder WithOutput(string outputPath, Action<IFFmpegOutputBuilder>? config = default);
+    public IFFmpegClArgumentsBuilder WithOutput(IFFmpegOutputSink sink, Action<IFFmpegOutputBuilder>? config = default);
+    public Task<IFFmpegClArguments> BuildAsync();
 }

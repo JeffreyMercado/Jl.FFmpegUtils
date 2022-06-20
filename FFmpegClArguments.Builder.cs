@@ -8,6 +8,7 @@ public partial record FFmpegClArguments
     {
         private readonly ImmutableArray<IFFmpegGlobalArgument>.Builder globalArguments = ImmutableArray.CreateBuilder<IFFmpegGlobalArgument>();
         private readonly List<InputConfig> inputConfigs = new List<InputConfig>();
+        private OutputConfig? outputConfig;
 
         public IFFmpegClArgumentsBuilder AddGlobal(IFFmpegGlobalArgument argument)
         {
@@ -39,35 +40,54 @@ public partial record FFmpegClArguments
             return this;
         }
 
-        public Task<IFFmpegClArguments> BuildAsync(string outputPath, Action<IFFmpegOutputBuilder>? config = default)
+        public IFFmpegClArgumentsBuilder WithOutput(string outputPath, Action<IFFmpegOutputBuilder>? config = default)
         {
             var sink = new FileOutputSink(
                 outputPath ?? throw new ArgumentNullException(nameof(outputPath))
             );
-            return BuildAsync(sink, config);
+            return WithOutput(sink, config);
         }
-        public async Task<IFFmpegClArguments> BuildAsync(IFFmpegOutputSink sink, Action<IFFmpegOutputBuilder>? config = default)
+        public IFFmpegClArgumentsBuilder WithOutput(IFFmpegOutputSink sink, Action<IFFmpegOutputBuilder>? config = default)
         {
-            if (sink == null)
-                throw new ArgumentNullException(nameof(sink));
+            if (outputConfig != null)
+                throw new InvalidOperationException($"output already set");
+            var _outputConfig = new OutputConfig(
+                sink ?? throw new ArgumentNullException(nameof(sink)),
+                config
+            );
+            outputConfig = _outputConfig;
+            return this;
+        }
+
+        public async Task<IFFmpegClArguments> BuildAsync()
+        {
             if (!inputConfigs.Any())
                 throw new InvalidOperationException($"inputs are required");
-
-            var inputs = (
-                await Task.WhenAll(inputConfigs.Select((x, i) => x.BuildAsync(Provider, i))).ConfigureAwait(false)
-            ).ToImmutableArray();
-            var outputBuilder = await sink.CreateOutputBuilderAsync(inputs).ConfigureAwait(false);
-            config?.Invoke(outputBuilder);
-            return new FFmpegClArguments(globalArguments.ToImmutable(), inputs, outputBuilder.Build());
+            if (outputConfig == null)
+                throw new InvalidOperationException($"output is required");
+            return await outputConfig.BuildAsync(Provider, inputConfigs, globalArguments.ToImmutable()).ConfigureAwait(false);
         }
 
-        private record InputConfig(IFFmpegInputSource Source, Action<IFFmpegInputBuilder, int>? Config = default)
+        private record InputConfig(IFFmpegInputSource Source, Action<IFFmpegInputBuilder, int>? Config)
         {
             public async Task<IFFmpegInput> BuildAsync(IMediaInfoProvider provider, int index)
             {
                 var builder = await Source.CreateInputBuilderAsync(provider).ConfigureAwait(false);
                 Config?.Invoke(builder, index);
                 return builder.Build(index);
+            }
+        }
+
+        private record OutputConfig(IFFmpegOutputSink Sink, Action<IFFmpegOutputBuilder>? Config)
+        {
+            public async Task<IFFmpegClArguments> BuildAsync(IMediaInfoProvider provider, IEnumerable<InputConfig> inputConfigs, IReadOnlyList<IFFmpegGlobalArgument> globalArguments)
+            {
+                var inputs = (
+                    await Task.WhenAll(inputConfigs.Select((x, i) => x.BuildAsync(provider, i))).ConfigureAwait(false)
+                ).ToImmutableArray();
+                var outputBuilder = await Sink.CreateOutputBuilderAsync(inputs).ConfigureAwait(false);
+                Config?.Invoke(outputBuilder);
+                return new FFmpegClArguments(globalArguments, inputs, outputBuilder.Build());
             }
         }
     }
