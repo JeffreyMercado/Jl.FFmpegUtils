@@ -32,10 +32,10 @@ public static partial class OutputComplexFilterBuilderExtensions
     {
         return Concat(builder, outputVideoName, outputAudioName, MakeSegment(first), MakeSegment(second), rest.Select(MakeSegment).ToArray());
 
-        (string, string) MakeSegment((IFFmpegInputVideoStream vid, IFFmpegInputAudioStream aud) segment) =>
+        static (string, string) MakeSegment((IFFmpegInputVideoStream vid, IFFmpegInputAudioStream aud) segment) =>
             ($"[{segment.vid.Identifier}]", $"[{segment.aud.Identifier}]");
     }
-    public static IFFmpegOutputComplexFilterArgument Concat(this IFFmpegOutputComplexFilterBuilder builder,
+    public static IFFmpegOutputComplexFilterArgument Concat(this IFFmpegOutputComplexFilterBuilder _,
         string outputVideoName, string outputAudioName, (string, string) first, (string, string) second, params (string, string)[] rest)
     {
         var segments = new[] { first, second }.Concat(rest);

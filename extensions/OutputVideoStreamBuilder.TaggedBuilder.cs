@@ -5,11 +5,12 @@ public static partial class OutputVideoStreamBuilderExtensions
     public static IFFmpegOutputVideoStreamBuilder<T> AsTagged<T>(this IFFmpegOutputVideoStreamBuilder builder)
         where T : ILibTag
     {
-        if (builder is IFFmpegOutputVideoStreamBuilder<T> taggedBuilder)
-            return taggedBuilder;
-        if (builder is ITaggedFFmpegOutputVideoStreamBuilder tagged)
-            return new TaggedOutputVideoStreamBuilder<T>(tagged.Builder);
-        return new TaggedOutputVideoStreamBuilder<T>(builder);
+        return builder switch
+        {
+            IFFmpegOutputVideoStreamBuilder<T> taggedBuilder => taggedBuilder,
+            ITaggedFFmpegOutputVideoStreamBuilder tagged => new TaggedOutputVideoStreamBuilder<T>(tagged.Builder),
+            _ => new TaggedOutputVideoStreamBuilder<T>(builder),
+        };
     }
 
     public static IFFmpegOutputVideoStreamBuilder<T> WithTag<T>(this IFFmpegOutputVideoStreamBuilder builder, Action<IFFmpegOutputVideoStreamBuilder<T>>? config)

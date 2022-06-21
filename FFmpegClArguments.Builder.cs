@@ -51,11 +51,10 @@ public partial record FFmpegClArguments
         {
             if (outputConfig != null)
                 throw new InvalidOperationException($"output already set");
-            var _outputConfig = new OutputConfig(
+            outputConfig = new OutputConfig(
                 sink ?? throw new ArgumentNullException(nameof(sink)),
                 config
             );
-            outputConfig = _outputConfig;
             return this;
         }
 
