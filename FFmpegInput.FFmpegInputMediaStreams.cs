@@ -4,7 +4,7 @@ namespace Jl.FFmpegUtils;
 
 public partial record FFmpegInput
 {
-    private class FFmpegInputMediaStreams : IFFmpegInputMediaStreams
+    private record FFmpegInputMediaStreams : IFFmpegInputMediaStreams
     {
         private readonly IReadOnlyList<IFFmpegInputMediaStream> mediaStreams;
         public FFmpegInputMediaStreams(FFmpegInput input, IMediaInfo mediaInfo)
