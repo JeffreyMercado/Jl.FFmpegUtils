@@ -1,6 +1,6 @@
-namespace Jl.FFmpegUtils;
+namespace Jl.FFmpegUtils.Libx264;
 
-public enum Tune
+public enum Libx264Tune
 {
     film,
     animation,

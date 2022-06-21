@@ -4,3 +4,8 @@ internal interface ISimpleOutputVideoStreamArgument : ISimpleArgument, ISimpleOu
 {
     IFFmpegOutputArgument IFFmpegOutputVideoStreamArgument.Create(IFFmpegOutputVideoStreamBuilder builder) => this;
 }
+
+internal interface ISimpleOutputVideoStreamArgument<T> : ISimpleOutputVideoStreamArgument, IFFmpegOutputVideoStreamArgument<T>
+    where T : ILibTag
+{
+}

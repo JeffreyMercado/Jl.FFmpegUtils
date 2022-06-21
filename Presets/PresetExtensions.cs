@@ -4,10 +4,10 @@ public static class PresetExtensions
 {
     public static IFFmpegOutputBuilder StandardOutputFormat(this IFFmpegOutputBuilder builder) => builder
         .AddVideoStream(v =>
-            v.Codec(VideoCodec.libx264)
+            v.CodecLibx264()
                 .Profile("main")
                 .Level("3.1")
-                .Preset(Preset.fast)
+                .Preset(Libx264.Libx264Preset.fast)
                 .Crf(21)
         )
         .AddAudioStream(a =>
