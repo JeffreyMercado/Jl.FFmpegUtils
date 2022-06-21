@@ -4,10 +4,10 @@ using Libx264;
 
 public static class Libx264Extensions
 {
-    public static IFFmpegOutputVideoStreamBuilder<Libx264Tag> CodecLibx264(this IFFmpegOutputVideoStreamBuilder builder, int? index = default)
+    public static IFFmpegOutputVideoStreamBuilder<Libx264Tag> CodecLibx264(this IFFmpegOutputVideoStreamBuilder builder, Action<IFFmpegOutputVideoStreamBuilder<Libx264Tag>>? config = default, int? index = default)
     {
         builder.AddArgument(new OutputVideoStreamBuilderExtensions.VideoCodecArgument(VideoCodec.libx264, index));
-        return builder.AsTagged<Libx264Tag>();
+        return builder.WithTag<Libx264Tag>(config);
     }
 
     internal record VideoProfileArgument(string Value) : SimpleArgument<string>($"-profile:v", Value), ISimpleOutputVideoStreamArgument<Libx264Tag>;
