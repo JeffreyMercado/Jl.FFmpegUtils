@@ -1,6 +1,6 @@
 namespace Jl.FFmpegUtils;
 
-internal interface ISimpleGlobalArgument : ISimpleArgument, IFFmpegGlobalArgument
+public interface ISimpleGlobalArgument : ISimpleArgument, IFFmpegGlobalArgument
 {
     string IFFmpegGlobalArgument.SerializeGlobalArgument() => Serialize();
 }

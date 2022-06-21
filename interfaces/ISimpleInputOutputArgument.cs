@@ -1,5 +1,5 @@
 namespace Jl.FFmpegUtils;
 
-internal interface ISimpleInputOutputArgument : ISimpleArgument, ISimpleInputArgument, ISimpleOutputArgument
+public interface ISimpleInputOutputArgument : ISimpleArgument, ISimpleInputArgument, ISimpleOutputArgument
 {
 }

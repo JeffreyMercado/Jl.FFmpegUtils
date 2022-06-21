@@ -30,9 +30,9 @@ internal static class Extensions
         return type.GetField($"{value}")?.GetCustomAttribute<TAttribute>();
     }
 
-    public static string GetDescription(this Enum value)
+    public static string? GetDescription(this Enum value)
     {
         var attr = value.GetCustomAttribute<System.ComponentModel.DescriptionAttribute>();
-        return attr?.Description ?? $"{value}";
+        return attr?.Description;
     }
 }

@@ -1,11 +1,11 @@
 namespace Jl.FFmpegUtils;
 
-internal interface ISimpleArgument
+public interface ISimpleArgument
 {
     string Serialize();
 }
 
-internal interface ISimpleArgument<T> : ISimpleArgument
+public interface ISimpleArgument<T> : ISimpleArgument
 {
     T Value { get; }
 
