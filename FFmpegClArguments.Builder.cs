@@ -58,20 +58,21 @@ public partial record FFmpegClArguments
             return this;
         }
 
-        public async Task<IFFmpegClArguments> BuildAsync()
+        public async Task<IFFmpegClArguments> BuildAsync(CancellationToken cancellationToken = default)
         {
             if (!inputConfigs.Any())
                 throw new InvalidOperationException($"inputs are required");
             if (outputConfig == null)
                 throw new InvalidOperationException($"output is required");
-            return await outputConfig.BuildAsync(Provider, inputConfigs, globalArguments.ToImmutable()).ConfigureAwait(false);
+            return await outputConfig.BuildAsync(Provider, inputConfigs, globalArguments.ToImmutable(), cancellationToken).ConfigureAwait(false);
         }
 
         private record InputConfig(IFFmpegInputSource Source, Action<IFFmpegInputBuilder, int>? Config)
         {
-            public async Task<IFFmpegInput> BuildAsync(IMediaInfoProvider provider, int index)
+            public async Task<IFFmpegInput> BuildAsync(IMediaInfoProvider provider, int index, CancellationToken cancellationToken = default)
             {
-                var builder = await Source.CreateInputBuilderAsync(provider).ConfigureAwait(false);
+                var mediaInfo = await Source.GetMediaInfoAsync(provider, cancellationToken).ConfigureAwait(false);
+                var builder = FFmpegInput.CreateBuilder(Source, mediaInfo);
                 Config?.Invoke(builder, index);
                 return builder.Build(index);
             }
@@ -79,12 +80,12 @@ public partial record FFmpegClArguments
 
         private record OutputConfig(IFFmpegOutputSink Sink, Action<IFFmpegOutputBuilder>? Config)
         {
-            public async Task<IFFmpegClArguments> BuildAsync(IMediaInfoProvider provider, IEnumerable<InputConfig> inputConfigs, IReadOnlyList<IFFmpegGlobalArgument> globalArguments)
+            public async Task<IFFmpegClArguments> BuildAsync(IMediaInfoProvider provider, IEnumerable<InputConfig> inputConfigs, IReadOnlyList<IFFmpegGlobalArgument> globalArguments, CancellationToken cancellationToken = default)
             {
                 var inputs = (
-                    await Task.WhenAll(inputConfigs.Select((x, i) => x.BuildAsync(provider, i))).ConfigureAwait(false)
+                    await Task.WhenAll(inputConfigs.Select((x, i) => x.BuildAsync(provider, i, cancellationToken))).ConfigureAwait(false)
                 ).ToImmutableArray();
-                var outputBuilder = await Sink.CreateOutputBuilderAsync(inputs).ConfigureAwait(false);
+                var outputBuilder = await Sink.CreateOutputBuilderAsync(inputs, cancellationToken).ConfigureAwait(false);
                 Config?.Invoke(outputBuilder);
                 return new FFmpegClArguments(globalArguments, inputs, outputBuilder.Build());
             }

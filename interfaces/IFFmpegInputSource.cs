@@ -3,5 +3,5 @@ namespace Jl.FFmpegUtils;
 public interface IFFmpegInputSource
 {
     string Serialize();
-    Task<IFFmpegInputBuilder> CreateInputBuilderAsync(IMediaInfoProvider provider);
+    Task<IMediaInfo> GetMediaInfoAsync(IMediaInfoProvider provider, CancellationToken cancellationToken = default);
 }
