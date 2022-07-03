@@ -1,6 +1,6 @@
 namespace Jl.FFmpegUtils;
 
-public record FileOutputSink(string FilePath) : IFFmpegOutputSink
+public record FileOutputSink(string FilePath) : IFFmpegOutputSink, IFileOutputSink
 {
     public string Serialize() => FilePath.TryQuoted();
 
