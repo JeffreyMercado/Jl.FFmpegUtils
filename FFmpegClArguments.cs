@@ -2,7 +2,7 @@
 
 public partial record FFmpegClArguments(IReadOnlyList<IFFmpegGlobalArgument> Globals, IReadOnlyList<IFFmpegInput> Inputs, IFFmpegOutput Output) : IFFmpegClArguments
 {
-    public static IFFmpegClArgumentsBuilder CreateBuilder(IMediaInfoProvider provider) => new Builder(
+    public static IFFmpegClArgumentsBuilder CreateBuilder(IFFmpegProvider provider) => new Builder(
         provider ?? throw new ArgumentNullException(nameof(provider))
     );
 
@@ -27,5 +27,10 @@ public partial record FFmpegClArguments(IReadOnlyList<IFFmpegGlobalArgument> Glo
             .Concat(Inputs.Select(x => x.SerializeInputArgumentReadable()))
             .Append(Output.SerializeOutputArgumentReadable());
         return "\\\n".JoinString(serialized);
+    }
+
+    public IFFmpegConversion CreateConversion()
+    {
+        return new FFmpegConversion(this);
     }
 }

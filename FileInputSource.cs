@@ -4,7 +4,7 @@ public record FileInputSource(string FilePath) : IFFmpegInputSource, IFileMediaS
 {
     public string Serialize() => $"-i {FilePath.TryQuoted()}";
 
-    public async Task<IMediaInfo> GetMediaInfoAsync(IMediaInfoProvider provider, CancellationToken cancellationToken = default)
+    public async Task<IMediaInfo> GetMediaInfoAsync(IFFmpegProvider provider, CancellationToken cancellationToken = default)
     {
         return await provider.GetMediaInfoAsync(this, cancellationToken).ConfigureAwait(false);
     }

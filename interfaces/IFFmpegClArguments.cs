@@ -8,6 +8,7 @@ public interface IFFmpegClArguments
 
     string SerializeArguments();
     string SerializeArgumentsReadable();
+    IFFmpegConversion CreateConversion();
 }
 
 public interface IFFmpegClArgumentsBuilder

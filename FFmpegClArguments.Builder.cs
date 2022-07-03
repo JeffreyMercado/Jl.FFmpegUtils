@@ -4,7 +4,7 @@ namespace Jl.FFmpegUtils;
 
 public partial record FFmpegClArguments
 {
-    public record Builder(IMediaInfoProvider Provider) : IFFmpegClArgumentsBuilder
+    public record Builder(IFFmpegProvider Provider) : IFFmpegClArgumentsBuilder
     {
         private readonly ImmutableArray<IFFmpegGlobalArgument>.Builder globalArguments = ImmutableArray.CreateBuilder<IFFmpegGlobalArgument>();
         private readonly List<InputConfig> inputConfigs = new List<InputConfig>();
@@ -69,7 +69,7 @@ public partial record FFmpegClArguments
 
         private record InputConfig(IFFmpegInputSource Source, Action<IFFmpegInputBuilder, int>? Config)
         {
-            public async Task<IFFmpegInput> BuildAsync(IMediaInfoProvider provider, int index, CancellationToken cancellationToken = default)
+            public async Task<IFFmpegInput> BuildAsync(IFFmpegProvider provider, int index, CancellationToken cancellationToken = default)
             {
                 var mediaInfo = await Source.GetMediaInfoAsync(provider, cancellationToken).ConfigureAwait(false);
                 var builder = FFmpegInput.CreateBuilder(Source, mediaInfo);
@@ -80,7 +80,7 @@ public partial record FFmpegClArguments
 
         private record OutputConfig(IFFmpegOutputSink Sink, Action<IFFmpegOutputBuilder>? Config)
         {
-            public async Task<IFFmpegClArguments> BuildAsync(IMediaInfoProvider provider, IEnumerable<InputConfig> inputConfigs, IReadOnlyList<IFFmpegGlobalArgument> globalArguments, CancellationToken cancellationToken = default)
+            public async Task<IFFmpegClArguments> BuildAsync(IFFmpegProvider provider, IEnumerable<InputConfig> inputConfigs, IReadOnlyList<IFFmpegGlobalArgument> globalArguments, CancellationToken cancellationToken = default)
             {
                 var inputs = (
                     await Task.WhenAll(inputConfigs.Select((x, i) => x.BuildAsync(provider, i, cancellationToken))).ConfigureAwait(false)
