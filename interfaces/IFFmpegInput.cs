@@ -3,6 +3,9 @@ namespace Jl.FFmpegUtils;
 public interface IFFmpegInput
 {
     IFFmpegInputSource Source { get; }
+    long Size { get; }
+    TimeSpan Duration { get; }
+    DateTime? CreationTime { get; }
     IFFmpegInputMediaStreams MediaStreams { get; }
     int Index { get; }
     string Identifier => $"{Index}";

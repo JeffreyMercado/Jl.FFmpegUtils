@@ -1,33 +1,44 @@
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 
 namespace Jl.FFmpegUtils;
 
 public record FFmpegConversion(IFFmpegClArguments Arguments) : IFFmpegConversion
 {
-    public event DataReceivedEventHandler? OutputDataReceived;
-    public event DataReceivedEventHandler? ProgressDataReceived;
+    public event EventHandler<ConversionData>? DataReceived;
+    public event EventHandler<ConversionProgress>? ProgressReceived;
 
     public async Task<IFFmpegConversionResult> ConvertAsync(IFFmpegProvider provider, CancellationToken cancellationToken = default)
     {
         var arguments = Arguments.SerializeArguments();
-        var result = await provider.ConvertAsync(arguments, new DataObserver(this), cancellationToken).ConfigureAwait(false);
+        var observer = new DataObserver(this);
+        var result = await provider.ConvertAsync(arguments, observer, cancellationToken).ConfigureAwait(false);
         return new FFmpegConversionResult(Arguments, result.StartTime, result.EndTime);
     }
-    private void OnOutputDataReceived(DataReceivedEventArgs e)
+    private void OnDataReceived(ConversionData e)
     {
-        OutputDataReceived?.Invoke(this, e);
+        DataReceived?.Invoke(this, e);
     }
-    private void OnProgressDataReceived(DataReceivedEventArgs e)
+    private void OnProgressReceived(ConversionProgress e)
     {
-        ProgressDataReceived?.Invoke(this, e);
+        ProgressReceived?.Invoke(this, e);
     }
 
     private record FFmpegConversionResult(IFFmpegClArguments Arguments, DateTime StartTime, DateTime EndTime) : IFFmpegConversionResult;
 
-    private record DataObserver(FFmpegConversion Conversion) : IObserver<DataReceivedEventArgs>
+    private class DataObserver : IObserver<DataReceivedEventArgs>
     {
         private readonly TaskCompletionSource tcs = new TaskCompletionSource();
+        private readonly FFmpegConversion conversion;
+        private readonly long? size;
+        private readonly TimeSpan? duration;
+        public DataObserver(FFmpegConversion conversion)
+        {
+            this.conversion = conversion;
+            var inputs = conversion.Arguments.Inputs;
+            (duration, size) = inputs.Count == 1 && inputs.Single() is IFFmpegInput input
+                ? (input.Duration, input.Size)
+                : default;
+        }
 
         public Task Task => tcs.Task;
 
@@ -35,13 +46,11 @@ public record FFmpegConversion(IFFmpegClArguments Arguments) : IFFmpegConversion
         {
             if (value.Data is string data)
             {
-                if (IsProgressData(data))
-                    Conversion.OnProgressDataReceived(value);
+                if (ConversionProgress.TryParse(data, size, duration) is ConversionProgress progress)
+                    conversion.OnProgressReceived(progress);
                 else
-                    Conversion.OnOutputDataReceived(value);
+                    conversion.OnDataReceived(new ConversionData(data));
             }
-
-            static bool IsProgressData(string data) => Regex.IsMatch(data, @"^frame=\s*[0-9.]+");
         }
 
         public void OnError(Exception error)

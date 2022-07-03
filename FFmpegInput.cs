@@ -7,9 +7,20 @@ public partial record FFmpegInput : IFFmpegInput
         mediaInfo ?? throw new ArgumentNullException(nameof(mediaInfo))
     );
 
-    private FFmpegInput(IFFmpegInputSource source, IMediaInfo mediaInfo, int index, IReadOnlyList<IFFmpegInputArgument> arguments) =>
-        (Source, MediaStreams, Index, Arguments) = (source, new FFmpegInputMediaStreams(this, mediaInfo), index, arguments);
+    private FFmpegInput(IFFmpegInputSource source, IMediaInfo mediaInfo, int index, IReadOnlyList<IFFmpegInputArgument> arguments)
+    {
+        Source = source;
+        Duration = mediaInfo.Duration;
+        Size = mediaInfo.Size;
+        CreationTime = mediaInfo.CreationTime;
+        MediaStreams = new FFmpegInputMediaStreams(this, mediaInfo);
+        Index = index;
+        Arguments = arguments;
+    }
     public IFFmpegInputSource Source { get; }
+    public TimeSpan Duration { get; }
+    public long Size { get; }
+    public DateTime? CreationTime { get; }
     public IFFmpegInputMediaStreams MediaStreams { get; }
     public int Index { get; }
     public IReadOnlyList<IFFmpegInputArgument> Arguments { get; }
