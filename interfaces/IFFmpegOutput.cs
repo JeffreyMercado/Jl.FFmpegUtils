@@ -16,6 +16,10 @@ public interface IFFmpegOutputBuilder
 {
     IFFmpegOutputSink Sink { get; }
     IReadOnlyList<IFFmpegInput> Inputs { get; }
+    IList<IFFmpegOutputComplexFilterArgument> ComplexFilters { get; }
+    IList<IFFmpegOutputArgument> Arguments { get; }
+    IList<IFFmpegOutputVideoStreamBuilder> VideoStreamBuilders { get; }
+    IList<IFFmpegOutputAudioStreamBuilder> AudioStreamBuilders { get; }
 
     IFFmpegOutputBuilder AddComplexFilter(Action<IFFmpegOutputComplexFilterBuilder> config);
     IFFmpegOutputBuilder AddComplexFilter(Func<IFFmpegOutputComplexFilterBuilder, IFFmpegOutputComplexFilterArgument> factory);

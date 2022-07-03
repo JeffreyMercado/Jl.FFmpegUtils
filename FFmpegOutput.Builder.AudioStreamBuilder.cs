@@ -6,17 +6,17 @@ public partial record FFmpegOutput
     {
         private record AudioStreamBuilder(int Index) : IFFmpegOutputAudioStreamBuilder
         {
-            private readonly List<IFFmpegOutputAudioStreamArgument> arguments = new List<IFFmpegOutputAudioStreamArgument>();
+            public IList<IFFmpegOutputAudioStreamArgument> Arguments { get; } = new List<IFFmpegOutputAudioStreamArgument>();
 
             public IFFmpegOutputAudioStreamBuilder AddArgument(IFFmpegOutputAudioStreamArgument argument)
             {
-                arguments.Add(argument);
+                Arguments.Add(argument);
                 return this;
             }
 
             public IEnumerable<IFFmpegOutputArgument> GetArguments()
             {
-                foreach (var argument in arguments)
+                foreach (var argument in Arguments)
                     yield return argument.Create(this);
             }
         }

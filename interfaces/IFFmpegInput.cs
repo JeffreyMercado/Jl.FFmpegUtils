@@ -19,6 +19,7 @@ public interface IFFmpegInputBuilder
 {
     IFFmpegInputSource Source { get; }
     IMediaInfo MediaInfo { get; }
+    IList<IFFmpegInputArgument> Arguments { get; }
 
     IFFmpegInputBuilder AddArgument(IFFmpegInputArgument argument);
     IFFmpegInput Build(int index);

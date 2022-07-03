@@ -7,6 +7,7 @@ public interface ITaggedFFmpegOutputVideoStreamBuilder : IFFmpegOutputVideoStrea
     IEnumerable<IFFmpegOutputArgument> IFFmpegOutputArgumentStream.GetArguments() => Builder.GetArguments();
     IEnumerator<IFFmpegOutputArgument> IEnumerable<IFFmpegOutputArgument>.GetEnumerator() => GetArguments().GetEnumerator();
     System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => ((IEnumerable<IFFmpegOutputArgument>)this).GetEnumerator();
+    IList<IFFmpegOutputVideoStreamArgument> IFFmpegOutputVideoStreamBuilder.Arguments => Builder.Arguments;
     int IFFmpegOutputStreamBuilder.Index => Builder.Index;
     IFFmpegOutputVideoStreamBuilder IFFmpegOutputVideoStreamBuilder.AddArgument(IFFmpegOutputVideoStreamArgument argument) => Builder.AddArgument(argument);
 }

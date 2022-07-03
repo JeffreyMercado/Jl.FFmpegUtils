@@ -7,5 +7,7 @@ public interface IFFmpegOutputVideoStreamArgument
 
 public interface IFFmpegOutputVideoStreamBuilder : IFFmpegOutputStreamBuilder
 {
+    IList<IFFmpegOutputVideoStreamArgument> Arguments { get; }
+
     IFFmpegOutputVideoStreamBuilder AddArgument(IFFmpegOutputVideoStreamArgument argument);
 }

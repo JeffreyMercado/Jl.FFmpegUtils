@@ -6,16 +6,16 @@ public partial record FFmpegOutput
 {
     public partial record Builder(IFFmpegOutputSink Sink, IReadOnlyList<IFFmpegInput> Inputs) : IFFmpegOutputBuilder
     {
-        private readonly ImmutableArray<IFFmpegOutputComplexFilterArgument>.Builder complexFilters = ImmutableArray.CreateBuilder<IFFmpegOutputComplexFilterArgument>();
-        private readonly ImmutableArray<IFFmpegOutputArgument>.Builder arguments = ImmutableArray.CreateBuilder<IFFmpegOutputArgument>();
-        private readonly ImmutableArray<IFFmpegOutputVideoStreamBuilder>.Builder videoStreamBuilders = ImmutableArray.CreateBuilder<IFFmpegOutputVideoStreamBuilder>();
-        private readonly ImmutableArray<IFFmpegOutputAudioStreamBuilder>.Builder audioStreamBuilders = ImmutableArray.CreateBuilder<IFFmpegOutputAudioStreamBuilder>();
+        public IList<IFFmpegOutputComplexFilterArgument> ComplexFilters { get; } = new List<IFFmpegOutputComplexFilterArgument>();
+        public IList<IFFmpegOutputArgument> Arguments { get; } = new List<IFFmpegOutputArgument>();
+        public IList<IFFmpegOutputVideoStreamBuilder> VideoStreamBuilders { get; } = new List<IFFmpegOutputVideoStreamBuilder>();
+        public IList<IFFmpegOutputAudioStreamBuilder> AudioStreamBuilders { get; } = new List<IFFmpegOutputAudioStreamBuilder>();
 
         public IFFmpegOutputBuilder AddComplexFilter(Action<IFFmpegOutputComplexFilterBuilder> config)
         {
             var builder = new ComplexFilterBuilder();
             config.Invoke(builder);
-            complexFilters.Add(builder.Build());
+            ComplexFilters.Add(builder.Build());
             return this;
         }
 
@@ -23,35 +23,35 @@ public partial record FFmpegOutput
         {
             var builder = new ComplexFilterBuilder();
             var argument = factory(builder);
-            complexFilters.Add(argument);
+            ComplexFilters.Add(argument);
             return this;
         }
 
         public IFFmpegOutputBuilder AddArgument(IFFmpegOutputArgument argument)
         {
-            arguments.Add(argument ?? throw new ArgumentNullException(nameof(argument)));
+            Arguments.Add(argument ?? throw new ArgumentNullException(nameof(argument)));
             return this;
         }
 
         public IFFmpegOutputBuilder AddVideoStream(Action<IFFmpegOutputVideoStreamBuilder> config)
         {
-            var builder = new VideoStreamBuilder(videoStreamBuilders.Count);
+            var builder = new VideoStreamBuilder(VideoStreamBuilders.Count);
             config.Invoke(builder);
-            videoStreamBuilders.Add(builder);
+            VideoStreamBuilders.Add(builder);
             return this;
         }
 
         public IFFmpegOutputBuilder AddAudioStream(Action<IFFmpegOutputAudioStreamBuilder> config)
         {
-            var builder = new AudioStreamBuilder(audioStreamBuilders.Count);
+            var builder = new AudioStreamBuilder(AudioStreamBuilders.Count);
             config.Invoke(builder);
-            audioStreamBuilders.Add(builder);
+            AudioStreamBuilders.Add(builder);
             return this;
         }
 
         public IFFmpegOutput Build()
         {
-            return new FFmpegOutput(Sink, complexFilters.ToImmutable(), arguments.ToImmutable(), videoStreamBuilders.ToImmutableArray(), audioStreamBuilders.ToImmutableArray());
+            return new FFmpegOutput(Sink, ComplexFilters.ToImmutableArray(), Arguments.ToImmutableArray(), VideoStreamBuilders.ToImmutableArray(), AudioStreamBuilders.ToImmutableArray());
         }
     }
 }

@@ -7,5 +7,7 @@ public interface IFFmpegOutputAudioStreamArgument
 
 public interface IFFmpegOutputAudioStreamBuilder : IFFmpegOutputStreamBuilder
 {
+    IList<IFFmpegOutputAudioStreamArgument> Arguments { get; }
+
     IFFmpegOutputAudioStreamBuilder AddArgument(IFFmpegOutputAudioStreamArgument argument);
 }

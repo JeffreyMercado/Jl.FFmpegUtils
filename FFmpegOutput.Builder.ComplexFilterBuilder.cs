@@ -8,17 +8,17 @@ public partial record FFmpegOutput
     {
         private record ComplexFilterBuilder() : IFFmpegOutputComplexFilterBuilder
         {
-            private readonly ImmutableArray<string>.Builder componentParts = ImmutableArray.CreateBuilder<string>();
+            public IList<string> Components { get; } = new List<string>();
 
             public IFFmpegOutputComplexFilterBuilder AddComponent(string component)
             {
-                componentParts.Add(component);
+                Components.Add(component);
                 return this;
             }
 
             public IFFmpegOutputComplexFilterArgument Build()
             {
-                return new ComplexFilter(componentParts.ToImmutable());
+                return new ComplexFilter(Components.ToImmutableArray());
             }
 
             private record ComplexFilter(IReadOnlyList<string> Components) : IFFmpegOutputComplexFilterArgument
