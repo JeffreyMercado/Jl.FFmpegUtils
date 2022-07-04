@@ -9,14 +9,16 @@ public class ConversionProgress : EventArgs
         //frame=98998 fps=102 q=28.0 size= 2456320kB time=00:55:01.19 bitrate=6095.4kbits/s dup=1 drop=0 speed= 3.4x
         if (!Regex.IsMatch(data, @"^frame=\s*[0-9.]+"))
             return null;
-        var m = Regex.Matches(data, @"L?([a-z0-9]+)=\s*(\S+)").ToDictionary(m => m.Groups[1].Value, m => m.Groups[2].Value);
+        var matches = Regex.Matches(data, @"(L)?([a-z0-9]+)=\s*(\S+)");
+        var fields = matches.ToDictionary(m => m.Groups[2].Value, m => m.Groups[3].Value);
+        var isLast = matches.Any(m => m.Groups[1].Success);
         return new ConversionProgress
         {
             Frame = GetLong("frame"),
             Fps = GetDecimal("fps"),
             Q = GetDecimal("q"),
             Size = GetLong("size", ..^2) * 1024,
-            Time = GetTimeSpan("time"),
+            Time = isLast ? duration : GetTimeSpan("time"),
             Bitrate = GetDecimal("bitrate", ..^7) * 1024,
             Dup = GetLong("dup"),
             Drop = GetLong("drop"),
@@ -25,9 +27,9 @@ public class ConversionProgress : EventArgs
             InputTime = duration,
         };
 
-        long? GetLong(string name, Range? r = default) => m.TryGetValue(name, out var v) && long.TryParse(Substring(v, r), out var vv) ? vv : null;
-        decimal? GetDecimal(string name, Range? r = default) => m.TryGetValue(name, out var v) && decimal.TryParse(Substring(v, r), out var vv) ? vv : null;
-        TimeSpan? GetTimeSpan(string name) => m.TryGetValue(name, out var v) ? TimeSpan.Parse(v) : null;
+        long? GetLong(string name, Range? r = default) => fields.TryGetValue(name, out var v) && long.TryParse(Substring(v, r), out var vv) ? vv : null;
+        decimal? GetDecimal(string name, Range? r = default) => fields.TryGetValue(name, out var v) && decimal.TryParse(Substring(v, r), out var vv) ? vv : null;
+        TimeSpan? GetTimeSpan(string name) => fields.TryGetValue(name, out var v) ? TimeSpan.Parse(v) : null;
         string Substring(string str, Range? r) => r != null ? str[r.Value] : str;
     }
 
