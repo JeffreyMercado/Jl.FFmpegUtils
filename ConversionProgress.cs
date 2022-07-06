@@ -27,9 +27,9 @@ public class ConversionProgress : EventArgs
             InputTime = duration,
         };
 
-        long? GetLong(string name, Range? r = default) => fields.TryGetValue(name, out var v) && long.TryParse(Substring(v, r), out var vv) ? vv : null;
-        decimal? GetDecimal(string name, Range? r = default) => fields.TryGetValue(name, out var v) && decimal.TryParse(Substring(v, r), out var vv) ? vv : null;
-        TimeSpan? GetTimeSpan(string name) => fields.TryGetValue(name, out var v) ? TimeSpan.Parse(v) : null;
+        long? GetLong(string name, Range? r = default) => fields.TryGetValue(name, out var v) && v != "N/A" && long.TryParse(Substring(v, r), out var vv) ? vv : null;
+        decimal? GetDecimal(string name, Range? r = default) => fields.TryGetValue(name, out var v) && v != "N/A" && decimal.TryParse(Substring(v, r), out var vv) ? vv : null;
+        TimeSpan? GetTimeSpan(string name) => fields.TryGetValue(name, out var v) && TimeSpan.TryParse(v, System.Globalization.CultureInfo.InvariantCulture, out var vv) ? vv : null;
         string Substring(string str, Range? r) => r != null ? str[r.Value] : str;
     }
 
