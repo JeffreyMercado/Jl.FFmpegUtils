@@ -55,7 +55,9 @@ public record FFmpegConversion(IFFmpegClArguments Arguments) : IFFmpegConversion
 
         public void OnError(Exception error)
         {
-            tcs.TrySetException(error);
+            // suppress cancellations here
+            if (error is not OperationCanceledException)
+                tcs.TrySetException(error);
         }
 
         public void OnCompleted()
