@@ -11,7 +11,7 @@ public partial record FFmpegOutput
         public IList<IFFmpegOutputVideoStreamBuilder> VideoStreamBuilders { get; } = new List<IFFmpegOutputVideoStreamBuilder>();
         public IList<IFFmpegOutputAudioStreamBuilder> AudioStreamBuilders { get; } = new List<IFFmpegOutputAudioStreamBuilder>();
 
-        public IFFmpegOutputBuilder AddComplexFilter(Action<IFFmpegOutputComplexFilterBuilder> config)
+        public IFFmpegOutputBuilder AddComplexFilter(Func<IFFmpegOutputComplexFilterBuilder, IFFmpegOutputComplexFilterBuilder> config)
         {
             var builder = new ComplexFilterBuilder();
             config.Invoke(builder);
@@ -33,7 +33,7 @@ public partial record FFmpegOutput
             return this;
         }
 
-        public IFFmpegOutputBuilder AddVideoStream(Action<IFFmpegOutputVideoStreamBuilder> config)
+        public IFFmpegOutputBuilder AddVideoStream(Func<IFFmpegOutputVideoStreamBuilder, IFFmpegOutputVideoStreamBuilder> config)
         {
             var builder = new VideoStreamBuilder(VideoStreamBuilders.Count);
             config.Invoke(builder);
@@ -41,7 +41,7 @@ public partial record FFmpegOutput
             return this;
         }
 
-        public IFFmpegOutputBuilder AddAudioStream(Action<IFFmpegOutputAudioStreamBuilder> config)
+        public IFFmpegOutputBuilder AddAudioStream(Func<IFFmpegOutputAudioStreamBuilder, IFFmpegOutputAudioStreamBuilder> config)
         {
             var builder = new AudioStreamBuilder(AudioStreamBuilders.Count);
             config.Invoke(builder);

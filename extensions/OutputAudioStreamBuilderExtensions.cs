@@ -2,6 +2,11 @@ namespace Jl.FFmpegUtils;
 
 public static partial class OutputAudioStreamBuilderExtensions
 {
+    public static IFFmpegOutputAudioStreamBuilder Configure(this IFFmpegOutputAudioStreamBuilder builder, Func<IFFmpegOutputAudioStreamBuilder, IFFmpegOutputAudioStreamBuilder>? config)
+    {
+        return config?.Invoke(builder) ?? builder;
+    }
+
     internal record AudioCodecArgument(AudioCodec Value, int? StreamIndex) : SimpleArgument<AudioCodec>($"-c:a", Value, StreamIndex), ISimpleOutputAudioStreamArgument;
     /// <summary>-c:a[:index] [codec]</summary>
     public static IFFmpegOutputAudioStreamBuilder Codec(this IFFmpegOutputAudioStreamBuilder builder, AudioCodec codec, int? index = default) => builder.AddArgument(new AudioCodecArgument(codec, index));

@@ -2,6 +2,11 @@ namespace Jl.FFmpegUtils;
 
 public static partial class OutputVideoStreamBuilderExtensions
 {
+    public static IFFmpegOutputVideoStreamBuilder Configure(this IFFmpegOutputVideoStreamBuilder builder, Func<IFFmpegOutputVideoStreamBuilder, IFFmpegOutputVideoStreamBuilder>? config)
+    {
+        return config?.Invoke(builder) ?? builder;
+    }
+
     internal record VideoCodecArgument(VideoCodec Value, int? StreamIndex) : SimpleArgument<VideoCodec>($"-c:v", Value, StreamIndex), ISimpleOutputVideoStreamArgument;
     /// <summary>-c:v[:index] [codec]</summary>
     public static IFFmpegOutputVideoStreamBuilder Codec(this IFFmpegOutputVideoStreamBuilder builder, VideoCodec codec, int? index = default) => builder.AddArgument(new VideoCodecArgument(codec, index));

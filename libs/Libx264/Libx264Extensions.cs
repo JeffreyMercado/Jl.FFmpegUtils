@@ -4,7 +4,7 @@ using Libx264;
 
 public static class Libx264Extensions
 {
-    public static IFFmpegOutputVideoStreamBuilder<Libx264Tag> CodecLibx264(this IFFmpegOutputVideoStreamBuilder builder, Action<IFFmpegOutputVideoStreamBuilder<Libx264Tag>>? config = default, int? index = default)
+    public static IFFmpegOutputVideoStreamBuilder<Libx264Tag> CodecLibx264(this IFFmpegOutputVideoStreamBuilder builder, Func<IFFmpegOutputVideoStreamBuilder<Libx264Tag>, IFFmpegOutputVideoStreamBuilder<Libx264Tag>>? config = default, int? index = default)
     {
         builder.AddArgument(new OutputVideoStreamBuilderExtensions.VideoCodecArgument(VideoCodec.libx264, index));
         return builder.WithTag(config);

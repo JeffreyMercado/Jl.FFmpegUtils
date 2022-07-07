@@ -21,10 +21,10 @@ public interface IFFmpegOutputBuilder
     IList<IFFmpegOutputVideoStreamBuilder> VideoStreamBuilders { get; }
     IList<IFFmpegOutputAudioStreamBuilder> AudioStreamBuilders { get; }
 
-    IFFmpegOutputBuilder AddComplexFilter(Action<IFFmpegOutputComplexFilterBuilder> config);
+    IFFmpegOutputBuilder AddComplexFilter(Func<IFFmpegOutputComplexFilterBuilder, IFFmpegOutputComplexFilterBuilder> config);
     IFFmpegOutputBuilder AddComplexFilter(Func<IFFmpegOutputComplexFilterBuilder, IFFmpegOutputComplexFilterArgument> factory);
     IFFmpegOutputBuilder AddArgument(IFFmpegOutputArgument argument);
-    IFFmpegOutputBuilder AddVideoStream(Action<IFFmpegOutputVideoStreamBuilder> config);
-    IFFmpegOutputBuilder AddAudioStream(Action<IFFmpegOutputAudioStreamBuilder> config);
+    IFFmpegOutputBuilder AddVideoStream(Func<IFFmpegOutputVideoStreamBuilder, IFFmpegOutputVideoStreamBuilder> config);
+    IFFmpegOutputBuilder AddAudioStream(Func<IFFmpegOutputAudioStreamBuilder, IFFmpegOutputAudioStreamBuilder> config);
     IFFmpegOutput Build();
 }
