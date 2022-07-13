@@ -31,6 +31,7 @@ public record FFmpegConversion(IFFmpegClArguments Arguments) : IFFmpegConversion
     {
         public IFFmpegOutputSink Output => Arguments.Output.Sink;
         public TimeSpan Duration => EndTime - StartTime;
+        public bool IsFinished => true;
     }
 
     private class DataObserver : IObserver<DataReceivedEventArgs>
@@ -53,6 +54,7 @@ public record FFmpegConversion(IFFmpegClArguments Arguments) : IFFmpegConversion
         }
 
         public Task Task => tcs.Task;
+        public bool IsFinished { get; private set; }
 
         public void OnNext(DataReceivedEventArgs value)
         {
@@ -61,6 +63,8 @@ public record FFmpegConversion(IFFmpegClArguments Arguments) : IFFmpegConversion
                 if (ConversionProgress.TryParse(data, size, duration) is ConversionProgress progress)
                 {
                     conversion.OnProgressReceived(progress);
+                    if (progress.IsLast)
+                        IsFinished = true;
                 }
                 else
                 {
@@ -81,7 +85,8 @@ public record FFmpegConversion(IFFmpegClArguments Arguments) : IFFmpegConversion
                     buffer.ToString(),
                     conversion.Arguments,
                     startTime,
-                    DateTime.Now
+                    DateTime.Now,
+                    IsFinished
                 );
                 tcs.TrySetException(exception);
             }
@@ -96,12 +101,13 @@ public record FFmpegConversion(IFFmpegClArguments Arguments) : IFFmpegConversion
 
 public class FFmpegConversionException : Exception, IFFmpegConversionResult
 {
-    public FFmpegConversionException(string message, string outputBuffer, IFFmpegClArguments arguments, DateTime startTime, DateTime endTime)
-        : base(message) => (OutputBuffer, Arguments, StartTime, EndTime) = (outputBuffer, arguments, startTime, endTime);
+    public FFmpegConversionException(string message, string outputBuffer, IFFmpegClArguments arguments, DateTime startTime, DateTime endTime, bool isFinished)
+        : base(message) => (OutputBuffer, Arguments, StartTime, EndTime, IsFinished) = (outputBuffer, arguments, startTime, endTime, isFinished);
     public string OutputBuffer { get; }
     public IFFmpegClArguments Arguments { get; }
     public IFFmpegOutputSink Output => Arguments.Output.Sink;
     public DateTime StartTime { get; }
     public DateTime EndTime { get; }
     public TimeSpan Duration => EndTime - StartTime;
+    public bool IsFinished { get; }
 }

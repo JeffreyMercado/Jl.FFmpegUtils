@@ -7,5 +7,6 @@ namespace Jl.FFmpegUtils
         DateTime StartTime { get; }
         DateTime EndTime { get; }
         TimeSpan Duration => EndTime - StartTime;
+        bool IsFinished { get; }
     }
 }

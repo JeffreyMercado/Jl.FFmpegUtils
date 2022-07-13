@@ -14,6 +14,7 @@ public class ConversionProgress : EventArgs
         var isLast = matches.Any(m => m.Groups[1].Success);
         return new ConversionProgress
         {
+            IsLast = isLast,
             Frame = GetLong("frame"),
             Fps = GetDecimal("fps"),
             Q = GetDecimal("q"),
@@ -36,7 +37,7 @@ public class ConversionProgress : EventArgs
     internal ConversionProgress()
     {
     }
-
+    public bool IsLast { get; init; }
     public long? Frame { get; init; }
     public decimal? Fps { get; init; }
     public decimal? Q { get; init; }
