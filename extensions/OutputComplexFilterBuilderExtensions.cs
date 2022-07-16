@@ -4,5 +4,5 @@ namespace Jl.FFmpegUtils;
 
 public static partial class OutputComplexFilterBuilderExtensions
 {
-    private static ComplexFilterArgument<T> ComplexFilter<T>(T value) => new ComplexFilterArgument<T>(value);
+    private static OutputComplexFilterArgument<T> ComplexFilter<T>(T value) => new OutputComplexFilterArgument<T>(value);
 }

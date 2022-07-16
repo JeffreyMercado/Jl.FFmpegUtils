@@ -19,9 +19,11 @@ public static class OutputBuilderExtensions
     /// <summary>-map [stream] [-map ...rest]</summary>
     public static IFFmpegOutputBuilder Map(this IFFmpegOutputBuilder builder, string stream, params string[] rest)
     {
-        builder.AddArgument(new MapArgument(stream));
+        builder.AddArgument(new OutputMapArgument(stream));
         foreach (var s in rest)
-            builder.AddArgument(new MapArgument(s));
+            builder.AddArgument(new OutputMapArgument(s));
         return builder;
     }
+
+    public static IFFmpegOutputBuilder Deinterlace(this IFFmpegOutputBuilder builder) => builder.AddArgument(new OutputDeinterlaceArgument());
 }

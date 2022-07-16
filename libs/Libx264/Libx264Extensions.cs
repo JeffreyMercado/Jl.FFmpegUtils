@@ -9,7 +9,7 @@ public static class Libx264Extensions
 {
     public static IFFmpegOutputVideoStreamBuilder<Libx264Tag> CodecLibx264(this IFFmpegOutputVideoStreamBuilder builder, Func<IFFmpegOutputVideoStreamBuilder<Libx264Tag>, IFFmpegOutputVideoStreamBuilder<Libx264Tag>>? config = default, int? index = default)
     {
-        builder.AddArgument(new VideoCodecArgument(VideoCodec.libx264, index));
+        builder.AddArgument(new OutputVideoCodecArgument(VideoCodec.libx264, index));
         return builder.WithTag(config);
     }
 

@@ -15,5 +15,14 @@ public static class InputBuilderExtensions
     }
 
     /// <summary>-stream_loop [value]</summary>
-    public static IFFmpegInputBuilder StreamLoop(this IFFmpegInputBuilder builder, int value) => builder.AddArgument(new StreamLoopArgument(value));
+    public static IFFmpegInputBuilder StreamLoop(this IFFmpegInputBuilder builder, int value) => builder.AddArgument(new InputStreamLoopArgument(value));
+
+    public static IFFmpegInputBuilder Rate(this IFFmpegInputBuilder builder, decimal rate) => Rate(builder, $"{rate}");
+    public static IFFmpegInputBuilder Rate(this IFFmpegInputBuilder builder, string rate) => builder.AddArgument(new InputRateArgument(rate));
+
+    public static IFFmpegInputBuilder InputTimeOffset(this IFFmpegInputBuilder builder, string offset) => InputTimeOffset(builder, TimeSpan.Parse(offset));
+    public static IFFmpegInputBuilder InputTimeOffset(this IFFmpegInputBuilder builder, TimeSpan offset) => builder.AddArgument(new InputTimeOffsetArgument(offset));
+
+    public static IFFmpegInputBuilder StreamSeekEof(this IFFmpegInputBuilder builder, string position) => StreamSeekEof(builder, TimeSpan.Parse(position));
+    public static IFFmpegInputBuilder StreamSeekEof(this IFFmpegInputBuilder builder, TimeSpan position) => builder.AddArgument(new InputStreamSeekEofArgument(position));
 }
