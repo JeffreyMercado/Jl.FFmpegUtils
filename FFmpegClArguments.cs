@@ -1,6 +1,6 @@
 ﻿namespace Jl.FFmpegUtils;
 
-public partial record FFmpegClArguments(IReadOnlyList<IFFmpegGlobalArgument> Globals, IReadOnlyList<IFFmpegInput> Inputs, IFFmpegOutput Output) : IFFmpegClArguments
+public partial record FFmpegClArguments(IReadOnlyList<IFFmpegGlobalArgument> Globals, IReadOnlyList<IFFmpegInput> Inputs, IReadOnlyList<IFFmpegOutput> Outputs) : IFFmpegClArguments
 {
     public static IFFmpegClArgumentsBuilder CreateBuilder(IFFmpegProvider provider) => new Builder(
         provider ?? throw new ArgumentNullException(nameof(provider))
@@ -11,7 +11,7 @@ public partial record FFmpegClArguments(IReadOnlyList<IFFmpegGlobalArgument> Glo
     {
         var serialized = Globals.Select(x => x.SerializeGlobalArgument())
             .Concat(Inputs.Select(x => x.SerializeInputArgument()))
-            .Append(Output.SerializeOutputArgument());
+            .Concat(Outputs.Select(x => x.SerializeOutputArgument()));
         return " ".JoinString(serialized);
     }
 
@@ -25,7 +25,7 @@ public partial record FFmpegClArguments(IReadOnlyList<IFFmpegGlobalArgument> Glo
         var serialized = argumentGroups
             .Select(x => " ".JoinString(x.Select(x => x.SerializeGlobalArgument())))
             .Concat(Inputs.Select(x => x.SerializeInputArgumentReadable()))
-            .Append(Output.SerializeOutputArgumentReadable());
+            .Concat(Outputs.Select(x => x.SerializeOutputArgumentReadable()));
         return "\\\n".JoinString(serialized);
     }
 

@@ -29,7 +29,7 @@ public record FFmpegConversion(IFFmpegClArguments Arguments) : IFFmpegConversion
 
     private record FFmpegConversionResult(IFFmpegClArguments Arguments, DateTime StartTime, DateTime EndTime) : IFFmpegConversionResult
     {
-        public IFFmpegOutputSink Output => Arguments.Output.Sink;
+        public IEnumerable<IFFmpegOutputSink> Outputs => Arguments.Outputs.Select(x => x.Sink);
         public TimeSpan Duration => EndTime - StartTime;
         public bool IsFinished => true;
     }
@@ -105,7 +105,7 @@ public class FFmpegConversionException : Exception, IFFmpegConversionResult
         : base(message) => (OutputBuffer, Arguments, StartTime, EndTime, IsFinished) = (outputBuffer, arguments, startTime, endTime, isFinished);
     public string OutputBuffer { get; }
     public IFFmpegClArguments Arguments { get; }
-    public IFFmpegOutputSink Output => Arguments.Output.Sink;
+    public IEnumerable<IFFmpegOutputSink> Outputs => Arguments.Outputs.Select(x => x.Sink);
     public DateTime StartTime { get; }
     public DateTime EndTime { get; }
     public TimeSpan Duration => EndTime - StartTime;

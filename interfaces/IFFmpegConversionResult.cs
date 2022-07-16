@@ -3,7 +3,7 @@ namespace Jl.FFmpegUtils
     public interface IFFmpegConversionResult
     {
         IFFmpegClArguments Arguments { get; }
-        IFFmpegOutputSink Output => Arguments.Output.Sink;
+        IEnumerable<IFFmpegOutputSink> Outputs => Arguments.Outputs.Select(x => x.Sink);
         DateTime StartTime { get; }
         DateTime EndTime { get; }
         TimeSpan Duration => EndTime - StartTime;

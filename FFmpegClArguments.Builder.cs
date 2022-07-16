@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+
 namespace Jl.FFmpegUtils;
 
 public partial record FFmpegClArguments
@@ -6,7 +8,7 @@ public partial record FFmpegClArguments
     {
         public IList<IFFmpegGlobalArgument> GlobalArguments { get; } = new List<IFFmpegGlobalArgument>();
         public IList<IFFmpegInputConfig> InputConfigs { get; } = new List<IFFmpegInputConfig>();
-        public IFFmpegOutputConfig? OutputConfig { get; set; }
+        public IList<IFFmpegOutputConfig> OutputConfigs { get; } = new List<IFFmpegOutputConfig>();
 
         public IFFmpegClArgumentsBuilder AddGlobal(IFFmpegGlobalArgument argument)
         {
@@ -38,19 +40,20 @@ public partial record FFmpegClArguments
             return this;
         }
 
-        public IFFmpegClArgumentsBuilder WithOutput(string outputPath, Func<IFFmpegOutputBuilder, IFFmpegOutputBuilder>? config = default)
+        public IFFmpegClArgumentsBuilder AddOutput(string outputPath, Func<IFFmpegOutputBuilder, IFFmpegOutputBuilder>? config = default)
         {
             var sink = new FileOutputSink(
                 outputPath ?? throw new ArgumentNullException(nameof(outputPath))
             );
-            return WithOutput(sink, config);
+            return AddOutput(sink, config);
         }
-        public IFFmpegClArgumentsBuilder WithOutput(IFFmpegOutputSink sink, Func<IFFmpegOutputBuilder, IFFmpegOutputBuilder>? config = default)
+        public IFFmpegClArgumentsBuilder AddOutput(IFFmpegOutputSink sink, Func<IFFmpegOutputBuilder, IFFmpegOutputBuilder>? config = default)
         {
-            OutputConfig = new FFmpegOutputConfig(
+            var outputConfig = new FFmpegOutputConfig(
                 sink ?? throw new ArgumentNullException(nameof(sink)),
                 config ?? (b => b)
             );
+            OutputConfigs.Add(outputConfig);
             return this;
         }
 
@@ -58,9 +61,16 @@ public partial record FFmpegClArguments
         {
             if (!InputConfigs.Any())
                 throw new InvalidOperationException($"inputs are required");
-            if (OutputConfig == null)
+            if (!OutputConfigs.Any())
                 throw new InvalidOperationException($"output is required");
-            return await OutputConfig.BuildAsync(Provider, InputConfigs, GlobalArguments, cancellationToken).ConfigureAwait(false);
+            var globals = GlobalArguments.ToImmutableArray();
+            var inputs = (
+                await Task.WhenAll(InputConfigs.Select((x, i) => x.BuildAsync(Provider, i, cancellationToken))).ConfigureAwait(false)
+            ).ToImmutableArray();
+            var outputs = (
+                await Task.WhenAll(OutputConfigs.Select(x => x.BuildAsync(Provider, inputs, cancellationToken))).ConfigureAwait(false)
+            ).ToImmutableArray();
+            return new FFmpegClArguments(globals, inputs, outputs);
         }
     }
 }

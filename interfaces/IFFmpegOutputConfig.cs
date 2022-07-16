@@ -5,5 +5,5 @@ public interface IFFmpegOutputConfig
     IFFmpegOutputSink Sink { get; }
     Func<IFFmpegOutputBuilder, IFFmpegOutputBuilder> Config { get; }
 
-    Task<IFFmpegClArguments> BuildAsync(IFFmpegProvider provider, IEnumerable<IFFmpegInputConfig> inputConfigs, IEnumerable<IFFmpegGlobalArgument> globalArguments, CancellationToken cancellationToken = default);
+    Task<IFFmpegOutput> BuildAsync(IFFmpegProvider provider, IReadOnlyList<IFFmpegInput> inputs, CancellationToken cancellationToken = default);
 }
