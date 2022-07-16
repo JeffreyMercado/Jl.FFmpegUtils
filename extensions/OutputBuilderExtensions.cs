@@ -1,6 +1,6 @@
-using Jl.FFmpegUtils.Arguments;
-
 namespace Jl.FFmpegUtils;
+
+using Arguments;
 
 public static class OutputBuilderExtensions
 {

@@ -1,8 +1,8 @@
 using System.Collections.Immutable;
 
-using Jl.FFmpegUtils.Arguments;
-
 namespace Jl.FFmpegUtils;
+
+using Arguments;
 
 public static partial class OutputComplexFilterBuilderExtensions
 {

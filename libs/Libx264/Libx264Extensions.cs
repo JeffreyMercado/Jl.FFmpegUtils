@@ -1,8 +1,7 @@
 namespace Jl.FFmpegUtils;
 
-using Jl.FFmpegUtils.Arguments;
-using Jl.FFmpegUtils.Arguments.Libx264;
-
+using Arguments;
+using Arguments.Libx264;
 using Libx264;
 
 public static class Libx264Extensions
