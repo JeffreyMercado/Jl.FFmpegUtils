@@ -6,6 +6,11 @@ public static class OutputBuilderExtensions
     {
         return config?.Invoke(builder) ?? builder;
     }
+    public static IFFmpegOutputBuilder Configure(this IFFmpegOutputBuilder builder, Action<IFFmpegOutputBuilder>? config)
+    {
+        config?.Invoke(builder);
+        return builder;
+    }
 
     internal record MapArgument(string Value) : SimpleArgument<string>("-map", Value.TryQuoted()), ISimpleOutputArgument;
     /// <summary>-map [stream]</summary>

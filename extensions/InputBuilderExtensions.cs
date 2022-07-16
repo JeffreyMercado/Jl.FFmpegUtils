@@ -6,6 +6,11 @@ public static class InputBuilderExtensions
     {
         return config?.Invoke(builder, index) ?? builder;
     }
+    public static IFFmpegInputBuilder Configure(this IFFmpegInputBuilder builder, int index, Action<IFFmpegInputBuilder, int>? config)
+    {
+        config?.Invoke(builder, index);
+        return builder;
+    }
 
     internal record StreamLoopArgument(int Value) : SimpleArgument<int>("-stream_loop", Value), ISimpleInputArgument;
     /// <summary>-stream_loop [value]</summary>
