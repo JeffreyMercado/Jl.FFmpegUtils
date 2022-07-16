@@ -13,6 +13,7 @@ public abstract record SimpleArgument<T>(string Flag, T Value, int? StreamIndex 
     {
         ISimpleArgument s => s.Serialize(),
         Enum e => e.GetDescription() ?? $"{Value}",
+        TimeSpan t => $"{t:hh':'mm':'ss'.'fff}",
         _ => $"{Value}",
     };
 }
