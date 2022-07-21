@@ -49,8 +49,41 @@ public record FFmpegConversion(IFFmpegClArguments Arguments) : IFFmpegConversion
             var inputs = conversion.Arguments.Inputs;
             (duration, size) = inputs.Count == 1 && inputs.Single() is IFFmpegInput input
                 ? (input.Duration, input.Size)
-                : default;
+                : (EstimateDuration(inputs), default);
             cancellationToken.Register(() => tcs.TrySetCanceled(cancellationToken));
+
+            static TimeSpan EstimateDuration(IReadOnlyList<IFFmpegInput> inputs)
+            {
+                try
+                {
+                    var inputLength = inputs.Aggregate(default(TimeSpan), (a, x) =>
+                        a + GetInputLength(x)
+                    );
+                    var silenceLength = inputs.Aggregate(default(TimeSpan), (a, x) => a + GetSilenceLength(x));
+                    return inputLength + silenceLength;
+                }
+                catch
+                {
+                    return inputs.Aggregate(default(TimeSpan), (a, x) => a + x.Duration);
+                }
+            }
+            static TimeSpan GetInputLength(IFFmpegInput input)
+            {
+                var duration = input.Duration;
+                var streamSeek = input.Arguments.OfType<Arguments.InputOutputStreamSeekArgument>().SingleOrDefault()?.Value ?? TimeSpan.Zero;
+                var timeDuration = input.Arguments.OfType<Arguments.InputOutputTimeDurationArgument>().SingleOrDefault()?.Value;
+                var timeTo = input.Arguments.OfType<Arguments.InputOutputTimeToArgument>().SingleOrDefault()?.Value;
+                return (timeDuration, timeTo) switch
+                {
+                    ({} t, _) => t,
+                    (null, {} tt) => tt - streamSeek,
+                    _ => duration - streamSeek,
+                };
+            }
+            static TimeSpan GetSilenceLength(IFFmpegInput input) => input.Arguments
+                .OfType<Arguments.InputTimeOffsetArgument>()
+                .Select(x => x.Value)
+                .SingleOrDefault();
         }
 
         public Task Task => tcs.Task;
