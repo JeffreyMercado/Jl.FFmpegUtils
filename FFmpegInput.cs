@@ -42,6 +42,6 @@ public partial record FFmpegInput : IFFmpegInput
         var serialized = argumentGroups
             .Select(x => " ".JoinString(x.Select(x => x.SerializeInputArgument(this))))
             .Append(Source.Serialize());
-        return "\\\n\t".JoinString(serialized);
+        return " \\\n\t".JoinString(serialized);
     }
 }

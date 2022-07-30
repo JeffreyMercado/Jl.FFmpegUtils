@@ -37,6 +37,6 @@ public partial record FFmpegOutput(
         var serialized = argumentGroups
             .Select(x => " ".JoinString(x.Select(y => y.SerializeOutputArgument(this))))
             .Append(Sink.Serialize());
-        return "\\\n\t".JoinString(serialized);
+        return " \\\n\t".JoinString(serialized);
     }
 }

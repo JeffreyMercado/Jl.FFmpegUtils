@@ -26,7 +26,7 @@ public partial record FFmpegClArguments(IReadOnlyList<IFFmpegGlobalArgument> Glo
             .Select(x => " ".JoinString(x.Select(x => x.SerializeGlobalArgument())))
             .Concat(Inputs.Select(x => x.SerializeInputArgumentReadable()))
             .Concat(Outputs.Select(x => x.SerializeOutputArgumentReadable()));
-        return "\\\n".JoinString(serialized);
+        return " \\\n".JoinString(serialized);
     }
 
     public IFFmpegConversion CreateConversion()
