@@ -8,6 +8,11 @@ public static class ClArgumentsBuilderExtensions
     {
         return config?.Invoke(builder) ?? builder;
     }
+    public static IFFmpegClArgumentsBuilder Configure(this IFFmpegClArgumentsBuilder builder, Action<IFFmpegClArgumentsBuilder>? config)
+    {
+        config?.Invoke(builder);
+        return builder;
+    }
 
     /// <summary>-y</summary>
     public static IFFmpegClArgumentsBuilder Overwrite(this IFFmpegClArgumentsBuilder builder) => builder.AddGlobal(new GlobalOverwriteArgument());

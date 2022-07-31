@@ -8,6 +8,11 @@ public static partial class OutputVideoStreamBuilderExtensions
     {
         return config?.Invoke(builder) ?? builder;
     }
+    public static IFFmpegOutputVideoStreamBuilder Configure(this IFFmpegOutputVideoStreamBuilder builder, Action<IFFmpegOutputVideoStreamBuilder>? config)
+    {
+        config?.Invoke(builder);
+        return builder;
+    }
 
     /// <summary>-c:v[:index] [codec]</summary>
     public static IFFmpegOutputVideoStreamBuilder Codec(this IFFmpegOutputVideoStreamBuilder builder, VideoCodec codec, int? index = default) => builder.AddArgument(new OutputVideoCodecArgument(codec, index));

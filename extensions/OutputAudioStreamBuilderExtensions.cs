@@ -8,6 +8,11 @@ public static partial class OutputAudioStreamBuilderExtensions
     {
         return config?.Invoke(builder) ?? builder;
     }
+    public static IFFmpegOutputAudioStreamBuilder Configure(this IFFmpegOutputAudioStreamBuilder builder, Action<IFFmpegOutputAudioStreamBuilder>? config)
+    {
+        config?.Invoke(builder);
+        return builder;
+    }
 
     /// <summary>-c:a[:index] [codec]</summary>
     public static IFFmpegOutputAudioStreamBuilder Codec(this IFFmpegOutputAudioStreamBuilder builder, AudioCodec codec, int? index = default) => builder.AddArgument(new OutputAudioCodecArgument(codec, index));
